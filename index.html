@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Laporan Insiden Digital</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Gaya Borang Input */
+        .input-container {
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .input-container h2 {
+            text-align: center;
+            color: #d32f2f;
+            border-bottom: 2px solid #d32f2f;
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full { grid-column: span 2; }
+
+        label { font-weight: bold; font-size: 0.9em; margin-bottom: 5px; }
+        input, textarea {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: Arial, sans-serif;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Gaya Output Laporan (A4) */
+        #report-output {
+            display: none; /* Sembunyi sehingga dijana */
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 20mm;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .report-header { font-weight: bold; margin-bottom: 20px; line-height: 1.2; }
+        .row { display: flex; margin-bottom: 5px; }
+        .label { width: 220px; font-weight: bold; flex-shrink: 0; }
+        .dots { flex-grow: 1; border-bottom: 1px dotted #000; padding-left: 5px; min-height: 1.2em; }
+        
+        .section-title {
+            font-weight: bold;
+            text-decoration: underline;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        .laporan-box {
+            margin-top: 10px;
+            text-align: justify;
+            text-transform: uppercase;
+            min-height: 100px;
+        }
+
+        .print-btn {
+            background: #d32f2f;
+            margin-bottom: 10px;
+        }
+
+        @media print {
+            .input-container, .print-btn, h2 { display: none !important; }
+            body { background: white; padding: 0; }
+            #report-output { display: block !important; box-shadow: none; padding: 10mm; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="input-container">
+    <h2>ISI MAKLUMAT LAPORAN</h2>
+    <div class="form-grid">
+        <div class="form-group full"><label>Jenis Insiden:</label><input type="text" id="in_jenis" value=""></div>
+        <div class="form-group"><label>Bil. Kes:</label><input type="text" id="in_bil" value=""></div>
+        <div class="form-group"><label>Tarikh/Masa Panggilan:</label><input type="text" id="in_tarikh" value=""></div>
+        <div class="form-group full"><label>Alamat:</label><input type="text" id="in_alamat" value=""></div>
+        <div class="form-group"><label>Masa Jentera Sampai:</label><input type="text" id="in_sampai" value=""></div>
+        <div class="form-group"><label>Jarak (KM):</label><input type="text" id="in_jarak" value=""></div>
+        <div class="form-group"><label>Masa Terkawal:</label><input type="text" id="in_terkawal" value=""></div>
+        <div class="form-group"><label>Masa Tamat:</label><input type="text" id="in_tamat" value=""></div>
+        <div class="form-group"><label>Bertolak Balik:</label><input type="text" id="in_balik" value=""></div>
+        <div class="form-group"><label>Sampai Balai:</label><input type="text" id="in_sampai_balai" value=""></div>
+        <div class="form-group"><label>Mangsa:</label><input type="text" id="in_mangsa" value=""></div>
+        <div class="form-group"><label>Komander Operasi:</label><input type="text" id="in_komander" value=""></div>
+        <div class="form-group"><label>Pasukan:</label><input type="text" id="in_pasukan" value=""></div>
+        <div class="form-group full"><label>Laporan Tindakan:</label><textarea id="in_laporan" rows="4"></textarea></div>
+        <div class="form-group"><label>Jumlah Anggota:</label><input type="text" id="in_jml_anggota" value=""></div>
+        <div class="form-group"><label>Jentera:</label><input type="text" id="in_jentera" value=""></div>
+        <div class="form-group"><label>EMRS:</label><input type="text" id="in_emrs" value=""></div>
+        <div class="form-group"><label>Agensi Bantuan:</label><input type="text" id="in_agensi" value=""></div>
+        <div class="form-group full"><label>Bilik Kawalan (Nama Petugas):</label><textarea id="in_bk" rows="2">&#10;</textarea></div>
+    </div>
+    <button onclick="generateReport()">JANA LAPORAN</button>
+</div>
+
+<div id="report-output">
+    <button class="print-btn" onclick="window.print()">CETAK SEKARANG (PRINT)</button>
+    
+    <div class="report-header">
+        Assalamualaikum W.B.T , <br>
+        Salam Jabatan Bomba dan Penyelamat Malaysia Berprestasi Tinggi,<br>
+        Cepat dan Mesra. <br>
+        Salam Malaysia Madani 
+    </div>
+
+    <div class="row"><div class="label">Jenis Insiden:</div><div class="dots" id="out_jenis"></div></div>
+    <div class="row"><div class="label">Bil. Kes:</div><div class="dots" id="out_bil"></div></div>
+    <div class="row"><div class="label">Tarikh/Masa Panggilan:</div><div class="dots" id="out_tarikh"></div></div>
+    <div class="row"><div class="label">Alamat:</div><div class="dots" id="out_alamat"></div></div>
+    <div class="row"><div class="label">Masa Jentera Sampai:</div><div class="dots" id="out_sampai"></div></div>
+    <div class="row"><div class="label">Jarak ke Tempat Kejadian:</div><div class="dots" id="out_jarak"></div></div>
+    <div class="row"><div class="label">Masa Operasi Terkawal:</div><div class="dots" id="out_terkawal"></div></div>
+    <div class="row"><div class="label">Masa Operasi Tamat:</div><div class="dots" id="out_tamat"></div></div>
+    <div class="row"><div class="label">Bertolak Balik Balai:</div><div class="dots" id="out_balik"></div></div>
+    <div class="row"><div class="label">Sampai di Balai:</div><div class="dots" id="out_sampai_balai"></div></div>
+    <div class="row"><div class="label">Mangsa:</div><div class="dots"> </div></div>
+    
+    <div class="section-title" id="out_pasukan_header">KEANGGOTAAN:</div>
+    <div class="row"><div class="label">Komander Operasi:</div><div class="dots" id="out_komander"></div></div>
+
+    <div class="section-title">LAPORAN KOMANDER </div>
+    <div class="laporan-box">
+        <strong>Tindakan:</strong> <span id="out_laporan"></span> 
+
+    <div style="margin-top: 15px;">
+        <div class="row"><div class="label">Jumlah Anggota:</div><div class="dots" id="out_jml_anggota"></div></div>
+        <div class="row"><div class="label">JENTERA:</div><div class="dots" id="out_jentera"></div></div>
+        <div class="row"><div class="label">EMRS:</div><div class="dots" id="out_emrs"></div></div>
+        <div class="row"><div class="label">Agensi bantuan:</div><div class="dots" id="out_agensi"></div></div>
+    </div>
+
+    <div class="section-title">BILIK KAWALAN :</div>
+    <div id="out_bk" style="white-space: pre-line; margin-top: 5px;"></div>
+
+    <div style="margin-top: 30px;">Sekian, terima kasih </div>
+</div>
+
+<script>
+    function generateReport() {
+        // Ambil data dari borang
+        document.getElementById('out_jenis').innerText = document.getElementById('in_jenis').value;
+        document.getElementById('out_bil').innerText = document.getElementById('in_bil').value;
+        document.getElementById('out_tarikh').innerText = document.getElementById('in_tarikh').value;
+        document.getElementById('out_alamat').innerText = document.getElementById('in_alamat').value;
+        document.getElementById('out_sampai').innerText = document.getElementById('in_sampai').value;
+        document.getElementById('out_jarak').innerText = document.getElementById('in_jarak').value;
+        document.getElementById('out_terkawal').innerText = document.getElementById('in_terkawal').value;
+        document.getElementById('out_tamat').innerText = document.getElementById('in_tamat').value;
+        document.getElementById('out_balik').innerText = document.getElementById('in_balik').value;
+        document.getElementById('out_sampai_balai').innerText = document.getElementById('in_sampai_balai').value;
+        document.getElementById('out_pasukan_header').innerText = "KEANGGOTAAN: " + document.getElementById('in_pasukan').value;
+        document.getElementById('out_komander').innerText = document.getElementById('in_komander').value;
+        document.getElementById('out_laporan').innerText = document.getElementById('in_laporan').value;
+        document.getElementById('out_jml_anggota').innerText = document.getElementById('in_jml_anggota').value;
+        document.getElementById('out_jentera').innerText = document.getElementById('in_jentera').value;
+        document.getElementById('out_emrs').innerText = document.getElementById('in_emrs').value;
+        document.getElementById('out_agensi').innerText = document.getElementById('in_agensi').value;
+        document.getElementById('out_bk').innerText = document.getElementById('in_bk').value;
+
+        // Paparkan output
+        document.getElementById('report-output').style.display = 'block';
+        window.scrollTo(0, document.getElementById('report-output').offsetTop);
+    }
+</script>
+
+</body>
+</html>
